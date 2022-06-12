@@ -25,48 +25,47 @@ exports.stripPrivateProperties = (privateProperties, rawData) => {
 
 /**
  *
- * @param {string} dynamicKey
- * @param {array} rawData
- * @returns {array}
+ * @param {string} dynamicKey - key to be used to filter data
+ * @param {array} rawData - array of objects
+ * @returns {array} - array of objects with dynamicKey removed
  */
 
-exports.excludeByProperty = (dynamicKey, rawData) => {
-  return rawData.filter((data) => !data[dynamicKey]);
-};
+exports.excludeByProperty = (dynamicKey, rawData) =>
+  rawData.filter((data) => !data[dynamicKey]);
 /**
- * 
+ *
  * @param {array} rawData - array of objects
- * @returns sum of all values in rawData
+ * @returns {array} sum of objects field values in rawData
  */
 exports.sumDeep = (rawData) => {
-  return rawData.map(({objects}) => ({
-    objects: objects.reduce((acc, {val}) => acc + val, 0),
+  return rawData.map(({ objects }) => ({
+    objects: objects.reduce((acc, { val }) => acc + val, 0),
   }));
 };
 /**
- * 
+ *
  * @param {array} colors - array of colors
- * @param {array} listStatus - array of status
+ * @param {array} statuses - array of status
  * @returns {array} - array of objects with color and status
  */
-exports.applyStatusColor = (colors, listStatus) => {
-  const hashColors = new Object();
-  for (const [color,status] of Object.entries(colors)) {
+exports.applyStatusColor = (colors, statuses) => {
+  const listColor = new Object();
+  for (const [color, status] of Object.entries(colors)) {
     status.forEach((el) => {
-        hashColors[el] = color;
-    })
+      listColor[el] = color;
+    });
   }
-  return listStatus.reduce((result, { status }) => {
-    return hashColors.hasOwnProperty(status)
+  return statuses.reduce((result, { status }) => {
+    return listColor.hasOwnProperty(status)
       ? result.concat({
           status,
-          color: hashColors[status],
+          color: listColor[status],
         })
       : result;
   }, []);
 };
 /**
- * 
+ *
  * @param {function} fnc - function to be called
  * @param {string} message - message to be displayed
  * @returns {function} 
@@ -74,17 +73,19 @@ exports.applyStatusColor = (colors, listStatus) => {
 exports.createGreeting = (fnc, message) => (userName) => fnc(message, userName);
 
 /**
- * 
+ *
  * @param {object} defaultProperties - default properties to be added to the object
  * @returns {object} - object with default properties
  */
-exports.setDefaults = (defaultProperties = {}) => (data = {}) => ({
+exports.setDefaults =
+  (defaultProperties = {}) =>
+  (data = {}) => ({
     ...defaultProperties,
     ...data,
   });
 /**
- * 
- * @param {string} userName 
+ *
+ * @param {string} userName
  * @param {object} services - object with services {fetchCompanyById: function,
  *  fetchStatus: function, fetchUsers: function}
  * @returns {object} - object with company, status and users
@@ -92,7 +93,7 @@ exports.setDefaults = (defaultProperties = {}) => (data = {}) => ({
 exports.fetchUserByNameAndUsersCompany = async (userName, services) => {
   try {
     const { fetchCompanyById, fetchStatus, fetchUsers } = services;
-    const [users,currentStatus] = await Promise.all([
+    const [users, currentStatus] = await Promise.all([
       fetchUsers(),
       fetchStatus(),
     ]);

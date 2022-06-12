@@ -1,4 +1,4 @@
-const utils = require("../index"); // jest global
+const utils = require(TEST_LOCATION); // jest global
 
 /**
  * Test suite
